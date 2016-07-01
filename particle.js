@@ -259,16 +259,7 @@ function update() {
 
 function render() {
 
-  mCamera.lookAt(mScene.position);
-
-  var timer = new Date().getTime() * 0.00005;
-
-  // mCamera.position.x = Math.floor(Math.cos( timer ) * 1000);
-  // mCamera.position.z = Math.floor(Math.sin( timer ) * 1000);
-  //
-  // console.log();
-
-  var camPos1 ={x:600, y:700, z:800};
+  var camPos1 ={x:300, y:300, z:200};
   var objPos1 ={x:0, y:0, z:0};
 
   cameraToObj(camPos1, objPos1, 300);
@@ -276,9 +267,25 @@ function render() {
 	mRenderer.render(mScene, mCamera);
 }
 
+//Camera Control:
+
+$('.c1').on('click', function(event) {
+  mScene.position.set(200, 100, 1000);
+});
+
+$('.c2').on('click', function(event) {
+  mScene.position.set(700, 800, -1000);
+});
+
+$('.c3').on('click', function(event) {
+  mScene.position.set(500, -200, 2000);
+});
+
+
 function cameraToObj(camPos, objPos, time){
   var timer = new Date().getTime() * 0.00005;
 
+    mCamera.lookAt(mScene.position);
     mCamera.position.x = (camPos.x - objPos.x) + ((Math.cos( timer ) * 1000));
     mCamera.position.y = (camPos.y - objPos.y) + ((Math.cos( timer ) * 1000));
     mCamera.position.z = (camPos.z - objPos.z) + ((Math.cos( timer ) * 1000));
@@ -663,11 +670,3 @@ THREE.BAS.PhongAnimationMaterial.prototype._concatVertexShader = function() {
 
 	].join("\n");
 };
-
-//Camera Control:
-
-$('.c1').on('click', function(event) {
-
-  // mCamera.position.set(0, 0, 0);
-
-});
