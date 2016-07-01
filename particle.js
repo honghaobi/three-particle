@@ -4,7 +4,7 @@ var mControls;
 
 var mScene;
 
-var mParticleCount = 10000; // <-- change this number!
+var mParticleCount = 100000; // <-- change this number!
 var mParticleSystem;
 
 var mTime = 0.0;
@@ -45,7 +45,7 @@ function initTHREE() {
 	mContainer = document.getElementById('three-container');
 	mContainer.appendChild(mRenderer.domElement);
 
-	mCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 5000);
+	mCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 100000);
 	mCamera.position.set(0, 600, 600);
 
 	mScene = new THREE.Scene();
@@ -62,7 +62,7 @@ function initControls() {
 }
 
 function initParticleSystem() {
-	var prefabGeometry = new THREE.PlaneGeometry(10, 10);
+	var prefabGeometry = new THREE.PlaneGeometry(4, 4);
 	var bufferGeometry = new THREE.BAS.PrefabBufferGeometry(prefabGeometry, mParticleCount);
 
 	bufferGeometry.computeVertexNormals();
@@ -258,7 +258,30 @@ function update() {
 }
 
 function render() {
+
+  mCamera.lookAt(mScene.position);
+
+  var timer = new Date().getTime() * 0.00005;
+
+  // mCamera.position.x = Math.floor(Math.cos( timer ) * 1000);
+  // mCamera.position.z = Math.floor(Math.sin( timer ) * 1000);
+  //
+  // console.log();
+
+  var camPos1 ={x:600, y:700, z:800};
+  var objPos1 ={x:0, y:0, z:0};
+
+  cameraToObj(camPos1, objPos1, 300);
+
 	mRenderer.render(mScene, mCamera);
+}
+
+function cameraToObj(camPos, objPos, time){
+  var timer = new Date().getTime() * 0.00005;
+
+    mCamera.position.x = (camPos.x - objPos.x) + ((Math.cos( timer ) * 1000));
+    mCamera.position.y = (camPos.y - objPos.y) + ((Math.cos( timer ) * 1000));
+    mCamera.position.z = (camPos.z - objPos.z) + ((Math.cos( timer ) * 1000));
 }
 
 function resize() {
@@ -640,3 +663,11 @@ THREE.BAS.PhongAnimationMaterial.prototype._concatVertexShader = function() {
 
 	].join("\n");
 };
+
+//Camera Control:
+
+$('.c1').on('click', function(event) {
+
+  // mCamera.position.set(0, 0, 0);
+
+});

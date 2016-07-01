@@ -1,5 +1,42 @@
 body {
 	margin: 0;
   overflow: hidden;
-  cursor: move;
+}
+
+.menu {
+  position: fixed;
+  list-style: none;
+  display: inline-block;
+  top: 0;
+  right: 0;
+  color: white;
+  cursor: pointer;
+}
+
+
+@import url(http://fonts.googleapis.com/css?family=Wire+One);
+
+*:focus {
+  outline: none;
+}
+
+body {
+  background: #111111;
+  font-family: 'Wire One', Helvetica, Arial, sans-serif;
+  font-size: 100px;
+}
+
+.neon {
+  margin: 0 auto;
+  text-align: center;
+  color: white;
+  text-shadow: 0 0 10px #87ceeb, 0 0 15px #87ceeb, 0 0 30px deepskyblue, 0 0 30px deepskyblue, 0 0 30px deepskyblue, 0 0 40px deepskyblue, 0 0 50px deepskyblue, 0 0 60px deepskyblue, 0 0 70px deepskyblue, 0 0 80px deepskyblue, 0 0 90px deepskyblue, 0 0 100px skyblue;
+}
+
+.info {
+  margin: 0 auto;
+  text-align: center;
+  color: #87ceeb;
+  text-shadow: 0 0 10px #87ceeb, 0 0 15px #87ceeb;
+  font-size: 20px;
 }
