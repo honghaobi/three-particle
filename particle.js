@@ -55,39 +55,44 @@ function initTHREE() {
 	light = new THREE.PointLight(0xffffff, 4, 1000, 2);
 	light.position.set(0, 400, 0);
 	mScene.add(light);
+
+  var loader = new THREE.TextureLoader();
+
+  // load a resource
+  loader.load(
+  	// resource URL
+  	'img/example1.png',
+  	// Function when resource is loaded
+  	function ( texture ) {
+  		// do something with the texture
+
+      var geometry = new THREE.BoxGeometry( 100, 100, 100 );
+  		var material = new THREE.MeshBasicMaterial( {
+  			map: texture
+  		 } );
+
+      var cube = new THREE.Mesh( geometry, material );
+      mScene.add(cube);
+  	},
+  	// Function called when download progresses
+  	function ( xhr ) {
+  		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+  	},
+  	// Function called when download errors
+  	function ( xhr ) {
+  		console.log( 'An error happened' );
+  	}
+  );
+
 }
 
 function initControls() {
 	mControls = new THREE.OrbitControls(mCamera, mRenderer.domElement);
 }
 
-var imgLoader = new THREE.TextureLoader();
-
-// load a resource
-imgLoader.load(
-	// resource URL
-	'img/example1.png',
-	// Function when resource is loaded
-	function ( texture ) {
-		// do something with the texture
-
-    
-
-		var material = new THREE.MeshBasicMaterial( {
-			map: texture
-		 } );
-	},
-	// Function called when download progresses
-	function ( xhr ) {
-		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-	},
-	// Function called when download errors
-	function ( xhr ) {
-		console.log( 'An error happened' );
-	}
-);
-
 function initParticleSystem() {
+
+  // size of the squares
 	var prefabGeometry = new THREE.PlaneGeometry(4, 4);
 	var bufferGeometry = new THREE.BAS.PrefabBufferGeometry(prefabGeometry, mParticleCount);
 	bufferGeometry.computeVertexNormals();
@@ -297,15 +302,15 @@ function render() {
 //Camera Control:
 
 $('.c1').on('click', function(event) {
-  mScene.position.set(200, 100, 1000);
+  mScene.position.set(0, 600, 600);
 });
 
 $('.c2').on('click', function(event) {
-  mScene.position.set(700, 800, -1000);
+  mScene.position.set(700, -800, 300);
 });
 
 $('.c3').on('click', function(event) {
-  mScene.position.set(500, -200, 2000);
+  mScene.position.set(-300, 400, 600);
 });
 
 
@@ -313,9 +318,9 @@ function cameraToObj(camPos, objPos, time){
   var timer = new Date().getTime() * 0.00005;
 
     mCamera.lookAt(mScene.position);
-    mCamera.position.x = (camPos.x - objPos.x) + ((Math.cos( timer ) * 1000));
-    mCamera.position.y = (camPos.y - objPos.y) + ((Math.cos( timer ) * 1000));
-    mCamera.position.z = (camPos.z - objPos.z) + ((Math.cos( timer ) * 1000));
+    // mCamera.position.x = (camPos.x - objPos.x) + ((Math.cos( timer ) * 1000));
+    // mCamera.position.y = (camPos.y - objPos.y) + ((Math.cos( timer ) * 1000));
+    // mCamera.position.z = (camPos.z - objPos.z) + ((Math.cos( timer ) * 1000));
 }
 
 function resize() {
