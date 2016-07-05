@@ -61,11 +61,38 @@ function initControls() {
 	mControls = new THREE.OrbitControls(mCamera, mRenderer.domElement);
 }
 
+var imgLoader = new THREE.TextureLoader();
+
+// load a resource
+imgLoader.load(
+	// resource URL
+	'img/example1.png',
+	// Function when resource is loaded
+	function ( texture ) {
+		// do something with the texture
+
+    
+
+		var material = new THREE.MeshBasicMaterial( {
+			map: texture
+		 } );
+	},
+	// Function called when download progresses
+	function ( xhr ) {
+		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+	},
+	// Function called when download errors
+	function ( xhr ) {
+		console.log( 'An error happened' );
+	}
+);
+
 function initParticleSystem() {
 	var prefabGeometry = new THREE.PlaneGeometry(4, 4);
 	var bufferGeometry = new THREE.BAS.PrefabBufferGeometry(prefabGeometry, mParticleCount);
-
 	bufferGeometry.computeVertexNormals();
+
+    // console.log(bufferGeometry);
 
 	// generate additional geometry data
 	var aOffset = bufferGeometry.createAttribute('aOffset', 1);
@@ -486,6 +513,7 @@ THREE.BAS.PrefabBufferGeometry.prototype.setAttribute4 = function(name, data) {
 
 	this.geometry.attributes[name].needsUpdate = true;
 };
+
 THREE.BAS.PrefabBufferGeometry.prototype.setAttribute3 = function(name, data) {
 	var offset = 0;
 	var array = this.geometry.attributes[name].array;
