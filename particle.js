@@ -23,14 +23,14 @@ function init() {
 	initControls();
 	initParticleSystem();
 
-  raycaster = new THREE.Raycaster();
-  mouse = new THREE.Vector2();
-
-  raycaster.setFromCamera( mouse, mCamera );
-
-  var intersects = raycaster.intersectObjects( mScene.children );
-
-  intersects[ 0 ].object.scale.x = 1;
+  // raycaster = new THREE.Raycaster();
+  // mouse = new THREE.Vector2();
+  //
+  // raycaster.setFromCamera( mouse, mCamera );
+  //
+  // var intersects = raycaster.intersectObjects( mScene.children );
+  //
+  // intersects[ 0 ].object.scale.x = 1;
 
 	requestAnimationFrame(tick);
 	window.addEventListener('resize', resize, false);
@@ -56,34 +56,6 @@ function initTHREE() {
 	light.position.set(0, 400, 0);
 	mScene.add(light);
 
-  var loader = new THREE.TextureLoader();
-
-  // load a resource
-  loader.load(
-  	// resource URL
-  	'img/example1.png',
-  	// Function when resource is loaded
-  	function ( texture ) {
-  		// do something with the texture
-
-      var geometry = new THREE.BoxGeometry( 100, 100, 100 );
-  		var material = new THREE.MeshBasicMaterial( {
-  			map: texture
-  		 } );
-
-      var cube = new THREE.Mesh( geometry, material );
-      mScene.add(cube);
-  	},
-  	// Function called when download progresses
-  	function ( xhr ) {
-  		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-  	},
-  	// Function called when download errors
-  	function ( xhr ) {
-  		console.log( 'An error happened' );
-  	}
-  );
-
 }
 
 function initControls() {
@@ -92,12 +64,41 @@ function initControls() {
 
 function initParticleSystem() {
 
+  var imgLoader = new THREE.TextureLoader();
+
+  // load a resource
+  imgLoader.load(
+    // resource URL
+    'img/example1.png',
+    // Function when resource is loaded
+    function ( texture ) {
+      // do something with the texture
+
+      var geometry = new THREE.PlaneGeometry( 100, 100 );
+      var material = new THREE.MeshBasicMaterial({
+        map: texture
+      });
+
+      var img = new THREE.Mesh( geometry, material );
+
+
+      mScene.add(img);
+
+    },
+    // Function called when download progresses
+    function ( xhr ) {
+      console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+    // Function called when download errors
+    function ( xhr ) {
+      console.log( 'An error happened' );
+    }
+  );
+
   // size of the squares
 	var prefabGeometry = new THREE.PlaneGeometry(4, 4);
 	var bufferGeometry = new THREE.BAS.PrefabBufferGeometry(prefabGeometry, mParticleCount);
 	bufferGeometry.computeVertexNormals();
-
-    // console.log(bufferGeometry);
 
 	// generate additional geometry data
 	var aOffset = bufferGeometry.createAttribute('aOffset', 1);
@@ -107,6 +108,123 @@ function initParticleSystem() {
 	var aEndPosition = bufferGeometry.createAttribute('aEndPosition', 3);
 	var aAxisAngle = bufferGeometry.createAttribute('aAxisAngle', 4);
 	var aColor = bufferGeometry.createAttribute('color', 3);
+
+  //-------------------------------------------------------------------------
+
+    var imgGeometry = new THREE.PlaneGeometry( 30, 30 );
+    var imgBufferGeometry = new THREE.BAS.PrefabBufferGeometry(imgGeometry, 100);  imgBufferGeometry.computeVertexNormals();
+
+    // generate additional geometry data
+    var bOffset = imgBufferGeometry.createAttribute('aOffset', 1);
+    var bStartPosition = imgBufferGeometry.createAttribute('aStartPosition', 3);
+    var bControlPoint1 = imgBufferGeometry.createAttribute('aControlPoint1', 3);
+    var bControlPoint2 = imgBufferGeometry.createAttribute('aControlPoint2', 3);
+    var bEndPosition = imgBufferGeometry.createAttribute('aEndPosition', 3);
+    var bAxisAngle = imgBufferGeometry.createAttribute('aAxisAngle', 4);
+    var bColor = imgBufferGeometry.createAttribute('color', 3);
+
+    for (i = 0, offset = 0; i < 100; i++) {
+      delay = i / 100 * mDuration;
+
+      for (j = 0; j < imgGeometry.vertices.length; j++) {
+        bOffset.array[offset++] = delay;
+      }
+    }
+
+    // buffer start positions
+    var x, y, z;
+
+    for (i = 0, offset = 0; i < 100; i++) {
+      x = -1000;
+      y = 0;
+      z = 0;
+
+      for (j = 0; j < imgGeometry.vertices.length; j++) {
+        bStartPosition.array[offset++] = x;
+        bStartPosition.array[offset++] = y;
+        bStartPosition.array[offset++] = z;
+      }
+    }
+
+    // buffer control points
+
+    for (i = 0, offset = 0; i < 100; i++) {
+      x = THREE.Math.randFloat(-400, 400);
+      y = THREE.Math.randFloat(400, 600);
+      z = THREE.Math.randFloat(-1200, -800);
+
+      for (j = 0; j < imgGeometry.vertices.length; j++) {
+        bControlPoint1.array[offset++] = x;
+        bControlPoint1.array[offset++] = y;
+        bControlPoint1.array[offset++] = z;
+      }
+    }
+
+    for (i = 0, offset = 0; i < 100; i++) {
+      x = THREE.Math.randFloat(-400, 400);
+      y = THREE.Math.randFloat(-600, -400);
+      z = THREE.Math.randFloat(800, 1200);
+
+      for (j = 0; j < imgGeometry.vertices.length; j++) {
+        bControlPoint2.array[offset++] = x;
+        bControlPoint2.array[offset++] = y;
+        bControlPoint2.array[offset++] = z;
+      }
+    }
+
+    // buffer end positions
+
+    for (i = 0, offset = 0; i < 100; i++) {
+      x = 1000;
+      y = 0;
+      z = 0;
+
+      for (j = 0; j < imgGeometry.vertices.length; j++) {
+        bEndPosition.array[offset++] = x;
+        bEndPosition.array[offset++] = y;
+        bEndPosition.array[offset++] = z;
+      }
+    }
+
+    // buffer axis angle
+    var axis = new THREE.Vector3();
+    var angle = 0;
+
+    for (i = 0, offset = 0; i < 100; i++) {
+      axis.x = THREE.Math.randFloatSpread(2);
+      axis.y = THREE.Math.randFloatSpread(2);
+      axis.z = THREE.Math.randFloatSpread(2);
+      axis.normalize();
+
+      angle = Math.PI * THREE.Math.randInt(16, 32);
+
+      for (j = 0; j < imgGeometry.vertices.length; j++) {
+        bAxisAngle.array[offset++] = axis.x;
+        bAxisAngle.array[offset++] = axis.y;
+        bAxisAngle.array[offset++] = axis.z;
+        bAxisAngle.array[offset++] = angle;
+      }
+    }
+
+    var color = new THREE.Color();
+  	var h, s, l;
+
+  	for (i = 0, offset = 0; i < 100; i++) {
+  		h = i / 100;
+  		s = THREE.Math.randFloat(0.4, 0.6);
+  		l = THREE.Math.randFloat(0.4, 0.6);
+
+  		color.setHSL(h, s, l);
+
+  		for (j = 0; j < imgGeometry.vertices.length; j++) {
+  			bColor.array[offset++] = color.r;
+  			bColor.array[offset++] = color.g;
+  			bColor.array[offset++] = color.b;
+  		}
+  	}
+
+  //-------------------------------------------------------------------------
+
 
 	var i, j, offset;
 
@@ -264,6 +382,15 @@ function initParticleSystem() {
 			shininess: 20
 		}
 	);
+
+
+
+  m2ParticleSystem = new THREE.Mesh(imgBufferGeometry, material);
+  // because the bounding box of the particle system does not reflect its on-screen size
+  // set this to false to prevent the whole thing from disappearing on certain angles
+  m2ParticleSystem.frustumCulled = false;
+  mScene.add(m2ParticleSystem);
+
 
 	mParticleSystem = new THREE.Mesh(bufferGeometry, material);
 	// because the bounding box of the particle system does not reflect its on-screen size
