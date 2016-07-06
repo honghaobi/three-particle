@@ -4,15 +4,12 @@ var mControls;
 
 var mScene;
 
-var mParticleCount = 100000; // <-- change this number!
+var mParticleCount = 100000;
 var mParticleSystem;
 
 var mTime = 0.0;
 var mTimeStep = (1 / 60);
 var mDuration = 200;
-
-var raycaster;
-var mouse;
 
 window.onload = function() {
 	init();
@@ -64,36 +61,17 @@ function initControls() {
 
 function initParticleSystem() {
 
-  var imgLoader = new THREE.TextureLoader();
+  var imgLoader = new THREE.TextureLoader().load('img/example1.png');
 
-  // load a resource
-  imgLoader.load(
-    // resource URL
-    'img/example1.png',
-    // Function when resource is loaded
-    function ( texture ) {
-      // do something with the texture
+  var geometry = new THREE.PlaneGeometry( 100, 100 );
+  var material1 = new THREE.MeshBasicMaterial({
+    map: imgLoader
+  });
 
-      var geometry = new THREE.PlaneGeometry( 100, 100 );
-      var material = new THREE.MeshBasicMaterial({
-        map: texture
-      });
+  var img = new THREE.Mesh( geometry, material1 );
 
-      var img = new THREE.Mesh( geometry, material );
+  // mScene.add(img);
 
-
-      mScene.add(img);
-
-    },
-    // Function called when download progresses
-    function ( xhr ) {
-      console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-    },
-    // Function called when download errors
-    function ( xhr ) {
-      console.log( 'An error happened' );
-    }
-  );
 
   // size of the squares
 	var prefabGeometry = new THREE.PlaneGeometry(4, 4);
@@ -383,20 +361,68 @@ function initParticleSystem() {
 		}
 	);
 
+  var material2 = new THREE.BAS.PhongAnimationMaterial(
+		// custom parameters & THREE.MeshPhongMaterial parameters
+		{
+			vertexColors: THREE.VertexColors,
+			shading: THREE.FlatShading,
+			side: THREE.DoubleSide,
+			uniforms: {
+				uTime: {
+					type: 'f',
+					value: 0
+				},
+				uDuration: {
+					type: 'f',
+					value: mDuration
+				}
+			},
+			shaderFunctions: [
+				THREE.BAS.ShaderChunk['quaternion_rotation'],
+				THREE.BAS.ShaderChunk['cubic_bezier']
+			],
+			shaderParameters: [
+				'uniform float uTime;',
+				'uniform float uDuration;',
+				'attribute float aOffset;',
+				'attribute vec3 aStartPosition;',
+				'attribute vec3 aControlPoint1;',
+				'attribute vec3 aControlPoint2;',
+				'attribute vec3 aEndPosition;',
+				'attribute vec4 aAxisAngle;'
+			],
+			shaderVertexInit: [
+				'float tProgress = mod((uTime + aOffset), uDuration) / uDuration;',
 
+				'float angle = aAxisAngle.w * tProgress;',
+				'vec4 tQuat = quatFromAxisAngle(aAxisAngle.xyz, angle);'
+			],
+			shaderTransformNormal: [
+				'objectNormal = rotateVector(tQuat, objectNormal);'
+			],
+			shaderTransformPosition: [
+				'transformed = rotateVector(tQuat, transformed);',
+				'transformed += cubicBezier(aStartPosition, aControlPoint1, aControlPoint2, aEndPosition, tProgress);'
+			]
+		},
+		// THREE.MeshPhongMaterial uniforms
+		{
+			specular: 0xff0000,
+			shininess: 20
+		}
+	);
 
-  m2ParticleSystem = new THREE.Mesh(imgBufferGeometry, material);
+  // console.log(material2);
+  m2ParticleSystem = new THREE.Mesh(imgBufferGeometry, material2);
   // because the bounding box of the particle system does not reflect its on-screen size
   // set this to false to prevent the whole thing from disappearing on certain angles
   m2ParticleSystem.frustumCulled = false;
   mScene.add(m2ParticleSystem);
 
-
 	mParticleSystem = new THREE.Mesh(bufferGeometry, material);
 	// because the bounding box of the particle system does not reflect its on-screen size
 	// set this to false to prevent the whole thing from disappearing on certain angles
 	mParticleSystem.frustumCulled = false;
-
 	mScene.add(mParticleSystem);
 }
 
@@ -413,6 +439,7 @@ function tick() {
 function update() {
 	mControls.update();
 
+  m2ParticleSystem.material.uniforms['uTime'].value = mTime;
 	mParticleSystem.material.uniforms['uTime'].value = mTime;
 }
 
@@ -744,6 +771,7 @@ THREE.BAS.PhongAnimationMaterial = function(parameters, uniformValues) {
 
 	var phongShader = THREE.ShaderLib['phong'];
 
+  this.map = null;
 	this.uniforms = THREE.UniformsUtils.merge([phongShader.uniforms, this.uniforms]);
 	this.lights = true;
 	this.vertexShader = this._concatVertexShader();
